@@ -1,12 +1,62 @@
-# React + Vite
+# 🎬 Movie Info App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive movie search and info web app built with **React**, **TMDB API**, **Firebase Auth**, and **Framer Motion**.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔍 **Search Movies:** Search for movies via TMDB’s free API.
+- 🎞️ **Responsive Grid:** 2–4 cards per row, works on all devices.
+- 💾 **Watchlist:** Google login with Firebase to save personal watchlists.
+- ⏭️ **Pagination:** Navigate through multiple pages of results.
+- ✨ **Smooth Animations:** Page transitions and UI animations with Framer Motion.
 
-## Expanding the ESLint configuration
+## 📂 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React 19**
+- **Vite**
+- **Firebase Auth & Firestore**
+- **TMDB API**
+- **Tailwind CSS**
+- **Framer Motion**
+
+## 🔑 Environment Variables
+
+Create a `.env` file at the root:
+
+```env
+VITE_TMDB_API_KEY=your_tmdb_api_key_here
+VITE_FIREBASE_API_KEY=your_firebase_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_sender_id
+VITE_FIREBASE_APP_ID=your_firebase_app_id
+```
+🛠️ Setup
+bash
+Copy
+Edit
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+🔐 Firebase Auth
+Uses Google Login.
+
+Stores watchlists in Firestore (or LocalStorage if Firestore is not used).
+
+📦 Deployment
+Push to GitHub.
+
+Connect repo to Netlify.
+
+Add your .env variables in Netlify → Site Settings → Environment Variables.
+
+Deploy!
+
+✨ Screenshots
+Add screenshots here if you have them.
+
+📜 License
+This project is open-source for learning purposes.
