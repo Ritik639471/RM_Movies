@@ -1,4 +1,4 @@
-# 🎬 Movie Info App
+# 🎬 RM Movie Info App
 
 A responsive movie search and info web app built with **React**, **TMDB API**, **Firebase Auth**, and **Framer Motion**.
 
@@ -41,10 +41,11 @@ npm install
 
 # Start dev server
 npm run dev
+
 🔐 Firebase Auth
 Uses Google Login.
 
-Stores watchlists in Firestore (or LocalStorage if Firestore is not used).
+Stores watchlists in Firestore 
 
 📦 Deployment
 Push to GitHub.
@@ -55,8 +56,8 @@ Add your .env variables in Netlify → Site Settings → Environment Variables.
 
 Deploy!
 
-✨ Screenshots
-Add screenshots here if you have them.
+✨ Netlify Deployed site
+https://rmmovies.netlify.app/
 
 📜 License
 This project is open-source for learning purposes.
