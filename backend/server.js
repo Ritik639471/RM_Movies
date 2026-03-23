@@ -10,9 +10,22 @@ const User = require('./models/User');
 const Watchlist = require('./models/Watchlist');
 const Review = require('./models/Review');
 
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    // and any origin in development or if origin ends with netlify.app or onrender.com
+    if (!origin || origin.includes('localhost') || origin.includes('netlify.app') || origin.includes('onrender.com') || origin.includes('github.io')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for now; narrow down after confirming deployment URL
+    }
+  },
+  credentials: true
+};
+
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Default MongoDB URI if not provided
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rm-movies';
