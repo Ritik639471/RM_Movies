@@ -83,24 +83,80 @@ const Home = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col items-center justify-center mb-16 mt-8">
-        <motion.h1 
-          className="text-5xl md:text-7xl font-black text-center mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
+      {/* ── Hero Section ── */}
+      <div className="flex flex-col items-center justify-center mb-16 mt-8 relative">
+
+        {/* Ambient animated background blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+          <motion.div
+            className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+            style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }}
+            animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.15, 0.95, 1] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-10 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-15"
+            style={{ background: "radial-gradient(circle, #db2777, transparent)" }}
+            animate={{ x: [0, -30, 20, 0], y: [0, 25, -15, 0], scale: [1, 0.9, 1.1, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          />
+          <motion.div
+            className="absolute bottom-0 left-1/2 w-64 h-64 rounded-full blur-3xl opacity-10"
+            style={{ background: "radial-gradient(circle, #6366f1, transparent)" }}
+            animate={{ x: [0, 20, -30, 0], scale: [1, 1.2, 0.85, 1] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+          />
+        </div>
+
+        {/* Animated headline — words stagger in */}
+        <div className="text-5xl md:text-7xl font-black text-center mb-6 tracking-tight leading-tight overflow-hidden">
+          {["Discover", "Your", "Next"].map((word, i) => (
+            <motion.span
+              key={word}
+              className="inline-block mr-4 bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500"
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 + i * 0.12, type: "spring", stiffness: 160, damping: 20 }}
+            >
+              {word}
+            </motion.span>
+          ))}
+          <br />
+          <motion.span
+            className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-600"
+            initial={{ y: 60, opacity: 0, filter: "blur(8px)" }}
+            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 120, damping: 18 }}
+          >
+            Favorite Story
+          </motion.span>
+        </div>
+
+        {/* Animated subtitle */}
+        <motion.p
+          className="text-gray-400 text-lg mb-8 text-center max-w-xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65, duration: 0.5 }}
         >
-          Discover Your Next <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Favorite Story</span>
-        </motion.h1>
-        
+          Millions of movies. Personalized for you. All in one vault.
+        </motion.p>
+
+        {/* Search form */}
         <motion.form
           onSubmit={handleSearch}
           className="w-full max-w-2xl relative"
-          initial={{ y: 20, opacity: 0 }}
+          initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.75, type: "spring", stiffness: 100 }}
         >
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            {/* Glow border */}
+            <motion.div
+              className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-60 transition duration-500"
+              animate={{ opacity: [0.2, 0.35, 0.2] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
             <div className="relative flex bg-[#121214] border border-white/10 rounded-2xl overflow-hidden glass-panel">
               <input
                 type="text"
@@ -109,20 +165,30 @@ const Home = () => {
                 placeholder="Search for movies, TV shows..."
                 className="w-full bg-transparent p-5 pl-6 text-lg text-white placeholder-gray-500 outline-none"
               />
-              <button
+              <motion.button
                 type="submit"
-                className="px-8 py-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 font-bold text-white transition-opacity"
+                className="px-8 py-5 bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-white relative overflow-hidden"
+                whileHover={{ opacity: 0.9 }}
+                whileTap={{ scale: 0.95 }}
               >
+                {/* Shimmer sweep on hover */}
+                <motion.span
+                  className="absolute inset-0 bg-white/20 skew-x-12 -translate-x-full"
+                  whileHover={{ translateX: "200%" }}
+                  transition={{ duration: 0.5 }}
+                />
                 Search
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.form>
 
         {/* Filters */}
         {!query.trim() && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
             className="flex flex-wrap justify-center gap-4 mt-6"
           >
             <select value={sortBy} onChange={e => {setSortBy(e.target.value); setPage(1);}} className="bg-[#121214] text-white/80 p-3 rounded-xl border border-white/10 outline-none focus:border-purple-500 transition-colors cursor-pointer hover:bg-white/5">
@@ -157,10 +223,22 @@ const Home = () => {
 
       {recommendations.length > 0 && !query.trim() && page === 1 && (
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-6 border-l-4 border-purple-500 pl-4">Recommended For You</h2>
+          <motion.h2
+            className="text-3xl font-bold text-white mb-6 flex items-center gap-3"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 120 }}
+          >
+            <motion.span
+              className="block w-1 h-8 rounded-full bg-gradient-to-b from-purple-400 to-purple-700"
+              animate={{ scaleY: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            Recommended For You
+          </motion.h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {recommendations.map((movie) => (
-              <motion.div key={`rec-${movie.id}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            {recommendations.map((movie, i) => (
+              <motion.div key={`rec-${movie.id}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
                 <MovieCard movie={movie} />
               </motion.div>
             ))}
@@ -168,11 +246,22 @@ const Home = () => {
         </div>
       )}
 
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-white border-l-4 border-pink-500 pl-4">
+      <motion.div
+        className="mb-6 flex items-center justify-between"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ type: "spring", stiffness: 120, delay: 0.2 }}
+      >
+        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+          <motion.span
+            className="block w-1 h-8 rounded-full bg-gradient-to-b from-pink-400 to-pink-700"
+            animate={{ scaleY: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+          />
           {query.trim() ? `Search Results for "${query}"` : "Trending Now"}
         </h2>
-      </div>
+      </motion.div>
+
 
       <AnimatePresence mode="wait">
         {isSearching ? (

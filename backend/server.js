@@ -28,8 +28,8 @@ app.use(express.json());
 app.use(cors(corsOptions));
 
 // Default MongoDB URI if not provided
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rm-movies';
-const JWT_SECRET = process.env.JWT_SECRET || 'secret_rm_movies_key_123';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cinevault';
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_cinevault_key_123';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
@@ -52,7 +52,8 @@ app.post('/api/auth/register', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Register error:', error.message);
+    res.status(500).json({ error: 'Server error', detail: error.message });
   }
 });
 
@@ -68,7 +69,8 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.status(200).json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Login error:', error.message);
+    res.status(500).json({ error: 'Server error', detail: error.message });
   }
 });
 

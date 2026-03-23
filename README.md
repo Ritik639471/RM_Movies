@@ -1,6 +1,6 @@
-# 🎬 RM Movies — Full-Stack Movie Discovery App
+# 🎬 CineVault — Full-Stack Movie Discovery App ([App](https://vault-cine.netlify.app))
 
-RM Movies is a feature-rich, full-stack web application built on the **MERN Stack** (MongoDB, Express.js, React, Node.js) that lets users discover, track, and review movies using live data from the **TMDB API**. It supports user authentication, personalized watchlists, YouTube trailer playback, community reviews, and intelligent recommendations.
+CineVault is a feature-rich, full-stack web application built on the **MERN Stack** (MongoDB, Express.js, React, Node.js) that lets users discover, track, and review movies using live data from the **TMDB API**. It supports user authentication, personalized watchlists, YouTube trailer playback, community reviews, and intelligent recommendations.
 
 ---
 
@@ -76,12 +76,12 @@ The entire interface is designed to feel premium and responsive:
 ## 📂 Project Structure
 
 ```
-RM_Movies-main/
+CineVault/
 ├── frontend/                 # React + Vite application
 │   ├── src/
 │   │   ├── components/       # MovieCard, MovieModal, Pagination, etc.
 │   │   ├── contexts/         # AuthContext, WatchlistContext (global state)
-│   │   ├── pages/            # Home, Watchlist, Login, Register
+│   │   ├── pages/            # Home, Watchlist
 │   │   ├── App.jsx           # Router setup
 │   │   └── index.css         # Tailwind CSS + Global Styles
 │   ├── .env                  # VITE_TMDB_API_KEY, VITE_API_URL
@@ -125,8 +125,8 @@ RM_Movies-main/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/RM_Movies-main.git
-cd RM_Movies-main
+git clone https://github.com/your-username/CineVault.git
+cd CineVault
 ```
 
 ### 2. Configure Environment Variables
@@ -179,13 +179,13 @@ Since the app uses a custom Node.js backend, the deployment is split across two 
 5. In the **Environment Variables** section, add:
    - `MONGO_URI` — your Atlas connection string
    - `JWT_SECRET` — your secret key
-6. Click **Deploy**. Once done, copy your live URL (e.g. `https://rm-movies-api.onrender.com`).
+6. Click **Deploy**. Once done, copy your live URL (e.g. `https://cinevault-api.onrender.com`).
 
 ### Step 2: Deploy the Frontend to Netlify
 1. Go to your existing [Netlify](https://netlify.com) site dashboard.
 2. Under **Site Configuration > Environment Variables**, add:
    - `VITE_TMDB_API_KEY` — your TMDB key
-   - `VITE_API_URL` — the Render URL from Step 1 (e.g. `https://rm-movies-api.onrender.com`)
+   - `VITE_API_URL` — the Render URL from Step 1 (e.g. `https://cinevault-api.onrender.com`)
 3. Under **Build Settings**, set the **Base Directory** to `frontend` and **Build Command** to `npm run build`.
 4. Trigger a redeploy. Your site will now talk to the live production backend!
 

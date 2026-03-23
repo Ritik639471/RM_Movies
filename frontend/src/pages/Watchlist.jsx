@@ -32,28 +32,56 @@ const Watchlist = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="mb-12 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <motion.div
+        className="mb-12 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+      >
         <div>
-          <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2">My Watchlist</h2>
-          <p className="text-gray-400">Your curated collection of movies and shows.</p>
+          <motion.h2
+            className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 140 }}
+          >
+            My Watchlist
+          </motion.h2>
+          <motion.p
+            className="text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+          >
+            Your curated collection of movies and shows.
+          </motion.p>
         </div>
         
         {/* Tabs */}
-        <div className="flex bg-[#121214] p-1 rounded-2xl border border-white/10 self-start md:self-end">
-          <button 
+        <motion.div
+          className="flex bg-[#121214] p-1 rounded-2xl border border-white/10 self-start md:self-end"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        >
+          <motion.button 
             onClick={() => setActiveTab('plan_to_watch')}
             className={`px-6 py-2.5 rounded-xl font-medium transition-all ${activeTab === 'plan_to_watch' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
           >
             Plan to Watch
-          </button>
-          <button 
+          </motion.button>
+          <motion.button 
             onClick={() => setActiveTab('watched')}
             className={`px-6 py-2.5 rounded-xl font-medium transition-all ${activeTab === 'watched' ? 'bg-emerald-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
           >
             Watched
-          </button>
-        </div>
-      </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
 
       {displayedWatchlist.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-3xl border border-white/10 border-dashed">

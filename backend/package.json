@@ -1,7 +1,7 @@
 {
-  "name": "rm-movies-backend",
+  "name": "cinevault-backend",
   "version": "1.0.0",
-  "description": "Backend for RM Movies",
+  "description": "Backend for CineVault",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
