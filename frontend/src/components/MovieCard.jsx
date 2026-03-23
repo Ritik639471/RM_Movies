@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { WatchlistContext } from "../contexts/WatchlistContext";
 import MovieModal from "./MovieModal";
@@ -45,7 +46,13 @@ const MovieCard = ({ movie, onRemove, isActiveTab }) => {
         </div>
         
         <div className="p-4 flex flex-col flex-grow bg-black/40">
-          <h2 className="text-lg font-bold truncate text-white mb-2">{movie.title || movie.name}</h2>
+          <Link 
+            to={`/movie/${movie.id || movie.movieId}`} 
+            onClick={(e) => e.stopPropagation()}
+            className="text-lg font-bold truncate text-white mb-2 hover:text-purple-400 transition-colors w-full block"
+          >
+            {movie.title || movie.name}
+          </Link>
           {onRemove && (
             <div className="mt-auto flex flex-col gap-2">
               {isActiveTab === 'plan_to_watch' ? (
