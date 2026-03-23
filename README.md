@@ -1,4 +1,4 @@
-# 🎬 RM Movies — Full-Stack Movie Discovery App
+# 🎬 RM Movies — Full-Stack Movie Discovery App([App Link](https://rmmovies.netlify.app/))
 
 RM Movies is a feature-rich, full-stack web application built on the **MERN Stack** (MongoDB, Express.js, React, Node.js) that lets users discover, track, and review movies using live data from the **TMDB API**. It supports user authentication, personalized watchlists, YouTube trailer playback, community reviews, and intelligent recommendations.
 
