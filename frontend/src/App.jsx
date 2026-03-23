@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { WatchlistProvider } from "./contexts/WatchlistContext.jsx";
