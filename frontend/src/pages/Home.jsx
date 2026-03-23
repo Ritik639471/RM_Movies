@@ -86,27 +86,6 @@ const Home = () => {
       {/* ── Hero Section ── */}
       <div className="flex flex-col items-center justify-center mb-16 mt-8 relative">
 
-        {/* Ambient animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-          <motion.div
-            className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
-            style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }}
-            animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.15, 0.95, 1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-10 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-15"
-            style={{ background: "radial-gradient(circle, #db2777, transparent)" }}
-            animate={{ x: [0, -30, 20, 0], y: [0, 25, -15, 0], scale: [1, 0.9, 1.1, 1] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          />
-          <motion.div
-            className="absolute bottom-0 left-1/2 w-64 h-64 rounded-full blur-3xl opacity-10"
-            style={{ background: "radial-gradient(circle, #6366f1, transparent)" }}
-            animate={{ x: [0, 20, -30, 0], scale: [1, 1.2, 0.85, 1] }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          />
-        </div>
 
         {/* Animated headline — words stagger in */}
         <div className="text-5xl md:text-7xl font-black text-center mb-6 tracking-tight leading-tight overflow-hidden">
