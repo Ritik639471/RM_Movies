@@ -14,13 +14,17 @@ const MoviePage = () => {
   const [trailerKey, setTrailerKey] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 5, text: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { addToWatchlist } = useContext(WatchlistContext);
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setIsPlaying(false);
+    setReviews([]); // Reset reviews when movie changes
     
     const fetchMovieData = async () => {
       setLoading(true);
@@ -44,6 +48,14 @@ const MoviePage = () => {
         if (recData.results) {
           setRecommendations(recData.results.slice(0, 10)); // Top 10 recommendations
         }
+
+        // Fetch Reviews
+        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const reviewsRes = await fetch(`${API_BASE}/api/reviews/${id}`);
+        if(reviewsRes.ok) {
+          const reviewsData = await reviewsRes.json();
+          setReviews(reviewsData);
+        }
       } catch (err) {
         console.error("Failed to fetch movie data:", err);
       } finally {
@@ -53,6 +65,37 @@ const MoviePage = () => {
 
     if (id) fetchMovieData();
   }, [id]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!token) return;
+    setIsSubmitting(true);
+    try {
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const res = await fetch(`${API_BASE}/api/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ 
+          movieId: id, 
+          rating: newReview.rating, 
+          reviewText: newReview.text 
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(prev => {
+          const exists = prev.find(r => r._id === data._id);
+          if (exists) return prev.map(r => r._id === data._id ? data : r);
+          return [data, ...prev];
+        });
+        setNewReview({ rating: 5, text: "" });
+      }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -85,7 +128,7 @@ const MoviePage = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Movie Details Hero Banner */}
-      <div className="relative w-full rounded-3xl overflow-hidden glass-panel flex flex-col md:flex-row shadow-[0_0_50px_rgba(168,85,247,0.15)] bg-[#121214] mb-16">
+      <div className="relative w-full rounded-3xl overflow-hidden glass-panel flex flex-col md:flex-row shadow-[0_0_50px_rgba(168,85,247,0.15)] bg-[#121214] mb-12">
         
         {/* Left Side: Trailer / Media Focus */}
         <div className="w-full md:w-3/5 h-[400px] md:h-[600px] relative bg-black shrink-0 flex">
@@ -162,6 +205,91 @@ const MoviePage = () => {
         </div>
       </div>
 
+      {/* Reviews Section */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+          <motion.span
+            className="block w-1 h-8 rounded-full bg-gradient-to-b from-purple-400 to-pink-600"
+            animate={{ scaleY: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          Community Reviews
+        </h2>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Post Review Form */}
+          <div className="lg:col-span-1">
+            {user ? (
+              <form onSubmit={handleReviewSubmit} className="glass-panel p-8 rounded-2xl border border-white/10 sticky top-32">
+                <h3 className="text-xl font-bold text-white mb-6">Write a Review</h3>
+                <div className="flex items-center gap-4 mb-6">
+                  <label className="text-gray-300 text-sm font-medium">Rating:</label>
+                  <select 
+                    value={newReview.rating} 
+                    onChange={e => setNewReview({...newReview, rating: Number(e.target.value)})}
+                    className="bg-black/50 text-white px-4 py-2 rounded-lg border border-white/20 outline-none focus:border-purple-500 transition-colors"
+                  >
+                    {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} ⭐</option>)}
+                  </select>
+                </div>
+                <textarea 
+                  value={newReview.text}
+                  onChange={e => setNewReview({...newReview, text: e.target.value})}
+                  placeholder="What did you think of the movie?"
+                  className="w-full bg-black/50 text-white p-4 rounded-xl border border-white/10 focus:border-purple-500 outline-none resize-none mb-6 h-32 transition-all"
+                  required
+                />
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold rounded-xl transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                >
+                  {isSubmitting ? "Submitting..." : "Post Review"}
+                </button>
+              </form>
+            ) : (
+              <div className="glass-panel p-8 rounded-2xl border border-white/10 text-center">
+                <p className="text-gray-400 mb-2">Want to share your thoughts?</p>
+                <p className="text-purple-400 font-bold">Sign in to leave a review.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Reviews List */}
+          <div className="lg:col-span-2 space-y-6">
+            {reviews.length === 0 ? (
+              <div className="glass-panel p-12 rounded-2xl border border-white/5 text-center">
+                <p className="text-gray-500 italic text-lg">No reviews yet. Be the first to share your experience!</p>
+              </div>
+            ) : (
+              reviews.map((rev, i) => (
+                <motion.div 
+                  key={rev._id} 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="glass-panel p-8 rounded-2xl border border-white/5 hover:border-white/10 transition-all group"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                        {rev.userName[0].toUpperCase()}
+                      </div>
+                      <span className="font-bold text-white text-lg">{rev.userName}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(star => (
+                        <span key={star} className={`text-xl ${star <= rev.rating ? 'text-yellow-400' : 'text-gray-700'}`}>★</span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-lg leading-relaxed pl-13 italic">"{rev.reviewText}"</p>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
       {/* Similar Movies Section */}
       {recommendations.length > 0 && (
         <motion.div
