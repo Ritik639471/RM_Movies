@@ -1,13 +1,16 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback, useRef } from "react";
 import MovieCard from "../components/MovieCard.jsx";
 import Pagination from "../components/Pagination.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { WatchlistContext } from "../contexts/WatchlistContext";
+import SplitText from "../components/bits/SplitText";
+import Squares from "../components/bits/Squares";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 const Home = () => {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [page, setPage] = useState(1);
@@ -19,6 +22,17 @@ const Home = () => {
   const [sortBy, setSortBy] = useState("popularity.desc");
   
   const { watchlist } = useContext(WatchlistContext);
+  const searchTimeout = useRef(null);
+
+  // Debounce search query
+  useEffect(() => {
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(searchTimeout.current);
+  }, [query]);
 
   // Fetch Recommended Movies based on watchlist
   useEffect(() => {
@@ -27,13 +41,12 @@ const Home = () => {
         setRecommendations([]);
         return;
       }
-      // Get the most recently added movie
       const lastMovie = watchlist[watchlist.length - 1];
       try {
         const res = await fetch(`https://api.themoviedb.org/3/movie/${lastMovie.movieId}/recommendations?api_key=${API_KEY}`);
         const data = await res.json();
         if (data.results) {
-          setRecommendations(data.results.slice(0, 5)); // Show top 5
+          setRecommendations(data.results.slice(0, 5));
         }
       } catch (err) {
         console.error(err);
@@ -42,12 +55,12 @@ const Home = () => {
     fetchRecommendations();
   }, [watchlist]);
 
-  const fetchMovies = async () => {
+  const fetchMovies = useCallback(async () => {
     setIsSearching(true);
     try {
       let endpoint = "";
-      if (query.trim()) {
-        endpoint = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}&page=${page}`;
+      if (debouncedQuery.trim()) {
+        endpoint = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${debouncedQuery}&page=${page}`;
       } else {
         endpoint = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&page=${page}&sort_by=${sortBy}`;
         if (filterGenre) endpoint += `&with_genres=${filterGenre}`;
@@ -57,58 +70,56 @@ const Home = () => {
       const res = await fetch(endpoint);
       const data = await res.json();
       setMovies(data.results || []);
-      setTotalPages(data.total_pages > 500 ? 500 : data.total_pages); // TMDB limits to 500 pages
+      setTotalPages(data.total_pages > 500 ? 500 : data.total_pages);
     } catch (err) {
       console.error(err);
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [debouncedQuery, page, sortBy, filterGenre, filterYear]);
 
   useEffect(() => {
     fetchMovies();
-  }, [page, sortBy, filterGenre, filterYear]);
+  }, [fetchMovies]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1);
-    fetchMovies();
+    setDebouncedQuery(query);
   };
 
   return (
     <motion.main
-      className="p-6 md:p-10 max-w-7xl mx-auto"
+      className="p-6 md:p-10 max-w-7xl mx-auto relative min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      <Squares 
+        direction="diagonal"
+        speed={0.5}
+        squareSize={40}
+        borderColor="#ffffff10"
+        hoverFillColor="#ffffff05"
+      />
+
       {/* ── Hero Section ── */}
       <div className="flex flex-col items-center justify-center mb-16 mt-8 relative">
-
-
         {/* Animated headline — words stagger in */}
-        <div className="text-5xl md:text-7xl font-black text-center mb-6 tracking-tight leading-tight overflow-hidden">
-          {["Discover", "Your", "Next"].map((word, i) => (
-            <motion.span
-              key={word}
-              className="inline-block mr-4 bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500"
-              initial={{ y: 60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 + i * 0.12, type: "spring", stiffness: 160, damping: 20 }}
-            >
-              {word}
-            </motion.span>
-          ))}
+        <div className="text-5xl md:text-7xl font-black text-center mb-6 tracking-tight leading-tight">
+          <SplitText 
+            text="Discover Your Next"
+            className="bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500"
+            delay={0.1}
+          />
           <br />
-          <motion.span
-            className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-600"
-            initial={{ y: 60, opacity: 0, filter: "blur(8px)" }}
-            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            transition={{ delay: 0.5, type: "spring", stiffness: 120, damping: 18 }}
-          >
-            Favorite Story
-          </motion.span>
+          <SplitText 
+            text="Favorite Story"
+            className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-600"
+            delay={0.5}
+            initial={{ y: 40, opacity: 0, filter: 'blur(10px)' }}
+          />
         </div>
 
         {/* Animated subtitle */}
@@ -116,7 +127,7 @@ const Home = () => {
           className="text-gray-400 text-lg mb-8 text-center max-w-xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.5 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
         >
           Millions of movies. Personalized for you. All in one vault.
         </motion.p>
@@ -127,7 +138,7 @@ const Home = () => {
           className="w-full max-w-2xl relative"
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.75, type: "spring", stiffness: 100 }}
+          transition={{ delay: 0.9, type: "spring", stiffness: 100 }}
         >
           <div className="relative group">
             {/* Glow border */}
@@ -136,12 +147,12 @@ const Home = () => {
               animate={{ opacity: [0.2, 0.35, 0.2] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
-            <div className="relative flex bg-[#121214] border border-white/10 rounded-2xl overflow-hidden glass-panel">
+            <div className="relative flex bg-[#121214]/80 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-xl">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for movies, TV shows..."
+                placeholder="Search movies..."
                 className="w-full bg-transparent p-5 pl-6 text-lg text-white placeholder-gray-500 outline-none"
               />
               <motion.button
@@ -150,13 +161,7 @@ const Home = () => {
                 whileHover={{ opacity: 0.9 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Shimmer sweep on hover */}
-                <motion.span
-                  className="absolute inset-0 bg-white/20 skew-x-12 -translate-x-full"
-                  whileHover={{ translateX: "200%" }}
-                  transition={{ duration: 0.5 }}
-                />
-                Search
+                {isSearching ? "..." : "Search"}
               </motion.button>
             </div>
           </div>
@@ -167,7 +172,7 @@ const Home = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 1.1 }}
             className="flex flex-wrap justify-center gap-4 mt-6"
           >
             <select value={sortBy} onChange={e => {setSortBy(e.target.value); setPage(1);}} className="bg-[#121214] text-white/80 p-3 rounded-xl border border-white/10 outline-none focus:border-purple-500 transition-colors cursor-pointer hover:bg-white/5">
@@ -206,41 +211,24 @@ const Home = () => {
             className="text-3xl font-bold text-white mb-6 flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 120 }}
           >
-            <motion.span
-              className="block w-1 h-8 rounded-full bg-gradient-to-b from-purple-400 to-purple-700"
-              animate={{ scaleY: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <div className="w-1 h-8 rounded-full bg-purple-500" />
             Recommended For You
           </motion.h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {recommendations.map((movie, i) => (
-              <motion.div key={`rec-${movie.id}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
-                <MovieCard movie={movie} />
-              </motion.div>
+              <MovieCard key={`rec-${movie.id}`} movie={movie} />
             ))}
           </div>
         </div>
       )}
 
-      <motion.div
-        className="mb-6 flex items-center justify-between"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ type: "spring", stiffness: 120, delay: 0.2 }}
-      >
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-          <motion.span
-            className="block w-1 h-8 rounded-full bg-gradient-to-b from-pink-400 to-pink-700"
-            animate={{ scaleY: [1, 1.3, 1], opacity: [0.8, 1, 0.8] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          />
-          {query.trim() ? `Search Results for "${query}"` : "Trending Now"}
+          <div className="w-1 h-8 rounded-full bg-pink-500" />
+          {debouncedQuery.trim() ? `Results for "${debouncedQuery}"` : "Trending Now"}
         </h2>
-      </motion.div>
-
+      </div>
 
       <AnimatePresence mode="wait">
         {isSearching ? (
@@ -250,17 +238,12 @@ const Home = () => {
         ) : (
           <motion.div 
             key="content"
-            initial="hidden" animate="show" exit="hidden"
-            variants={{
-              hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
           >
             {movies.map((movie) => (
-              <motion.div key={movie.id} variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }}>
-                <MovieCard movie={movie} />
-              </motion.div>
+              <MovieCard key={movie.id} movie={movie} />
             ))}
           </motion.div>
         )}

@@ -13,7 +13,7 @@ const PARTICLES = [
   { x:   0, y: -24, delay: 0.45, size: 3  },
 ];
 
-const LogoParticle = ({ x, y, delay, size }) => (
+const LogoParticle = React.memo(({ x, y, delay, size }) => (
   <motion.span
     className="absolute rounded-full bg-gradient-to-br from-purple-400 to-pink-500 pointer-events-none"
     style={{ width: size, height: size, left: "50%", top: "50%", marginLeft: x, marginTop: y }}
@@ -24,7 +24,7 @@ const LogoParticle = ({ x, y, delay, size }) => (
     }}
     transition={{ duration: 3, repeat: Infinity, delay, ease: "easeInOut" }}
   />
-);
+));
 
 /* Letter-by-letter animation for "CineVault" */
 const logoLetters = "CineVault".split("");
